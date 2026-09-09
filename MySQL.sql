@@ -1,0 +1,83 @@
+DROP DATABASE IF EXISTS dbGamarraMarket;
+CREATE DATABASE dbGamarraMarket DEFAULT CHARACTER SET utf8;
+USE dbGamarraMarket;
+
+-- 1. Crear CLIENTE
+CREATE TABLE CLIENTE (
+    id INT AUTO_INCREMENT,
+    tipo_documento CHAR(3) NOT NULL,
+    numero_documento CHAR(15) NOT NULL,
+    nombres VARCHAR(60) NOT NULL,
+    apellidos VARCHAR(90) NOT NULL,
+    email VARCHAR(80) NULL,
+    celular CHAR(9) NULL,
+    fecha_nacimiento DATE NOT NULL,
+    activo BOOL NOT NULL DEFAULT 1,
+    CONSTRAINT cliente_pk PRIMARY KEY (id)
+);
+
+-- 2. Crear VENDEDOR
+CREATE TABLE VENDEDOR (
+    id INT AUTO_INCREMENT,
+    tipo_documento CHAR(3) NOT NULL,
+    numero_documento CHAR(15) NOT NULL,
+    nombres VARCHAR(60) NOT NULL,
+    apellidos VARCHAR(90) NOT NULL,
+    salario DECIMAL(8,2) NOT NULL,
+    celular CHAR(9) NULL,
+    email VARCHAR(80) NULL,
+    activo BOOL NOT NULL DEFAULT 1,
+    CONSTRAINT vendedor_pk PRIMARY KEY (id)
+);
+
+-- 3. Crear tabla PRENDA
+CREATE TABLE PRENDA (
+    id INT AUTO_INCREMENT,
+    descripcion VARCHAR(90) NOT NULL,
+    marca VARCHAR(60) NOT NULL,
+    cantidad INT NOT NULL,
+    talla VARCHAR(10) NOT NULL,
+    precio DECIMAL(8,2) NOT NULL,
+    activo BOOL NOT NULL DEFAULT 1,
+    CONSTRAINT prenda_pk PRIMARY KEY (id)
+);
+
+-- 4. Crear VENTA
+CREATE TABLE VENTA (
+    id INT AUTO_INCREMENT,
+    fecha_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    activo BOOL NOT NULL DEFAULT 1,
+    cliente_id INT NOT NULL,
+    vendedor_id INT NOT NULL,
+    CONSTRAINT venta_pk PRIMARY KEY (id)
+);
+
+-- 5. Crear VENTA_DETALLE
+CREATE TABLE VENTA_DETALLE (
+    id INT AUTO_INCREMENT,
+    cantidad INT NOT NULL,
+    venta_id INT NOT NULL,
+    prenda_id INT NOT NULL,
+    CONSTRAINT venta_detalle_pk PRIMARY KEY (id)
+);
+
+-- RELACIONES (FOREIGN KEYS)
+ALTER TABLE VENTA
+    ADD CONSTRAINT venta_cliente FOREIGN KEY (cliente_id)
+    REFERENCES CLIENTE (id)
+    ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE VENTA
+    ADD CONSTRAINT venta_vendedor FOREIGN KEY (vendedor_id)
+    REFERENCES VENDEDOR (id)
+    ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE VENTA_DETALLE
+    ADD CONSTRAINT venta_detalle_venta FOREIGN KEY (venta_id)
+    REFERENCES VENTA (id)
+    ON UPDATE CASCADE ON DELETE CASCADE;
+
+ALTER TABLE VENTA_DETALLE
+    ADD CONSTRAINT venta_detalle_prenda FOREIGN KEY (prenda_id)
+    REFERENCES PRENDA (id)
+    ON UPDATE CASCADE ON DELETE CASCADE;
